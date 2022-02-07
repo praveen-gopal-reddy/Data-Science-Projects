@@ -83,4 +83,4 @@ Maths,Python, Pandas,Numpy,Datatime,Matplotlib,R
 - Performed Z-test and Independent sample testing.
 
 #### Skills and Tools
-R,dplyr,ggplot,distributions, Inferential statistics 
+R,dplyr,ggplot,distributions, Inferential statistics.
