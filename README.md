@@ -1,6 +1,6 @@
 # Data-Science-Projects
 
-The Projects in this repository is done as part of my academic study during my masters in data science and analytics from University of Leeds(2021 - 2022).
+The Projects in this repository is done as part of my academic course work during my masters in data science and analytics from University of Leeds(2021 - 2022).
 
 ## Artificial Intelligence
 This folder contains Projects about Image classification and Image Caption Prediciton using Convolutional Neural Network(CNN) and Recurrent Neural Network Respectively.
