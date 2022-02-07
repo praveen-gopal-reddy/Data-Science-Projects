@@ -66,7 +66,8 @@ Data Wrangling,Python, Pandas,Numpy,Matplotlib
 #### Skills and Tools
 Data Wrangling, Python,Pandas,Numpy,Matplotlib
 
-### Dissertation
+## Dissertation
+### River Flooding
 - Analyze River Wey floods in Guildford town, Surrey in 2013 and 2020 and River Severn floods at Bewdley town, Worcestershire in 2021.
 - Analyze time series data and build quadrant plots.
 - Analyze river flood data and find correlations between input variables.
@@ -76,7 +77,8 @@ Data Wrangling, Python,Pandas,Numpy,Matplotlib
 #### Skills and Tools
 Maths,Python, Pandas,Numpy,Datatime,Matplotlib,R
 
-### Statistics
+## Statistics
+### Serial Killers
 - The Project aim is to know , (i) does the average age at first murder differ between killers with different motives.  (ii) does mean age at first kill differs between pairs  of motives.
 - The motives are Angel of death ,robbery or financial gain ,Revenge or vigilante justice.
 - Performed data cleaning, Data exploration and Data modelling.
