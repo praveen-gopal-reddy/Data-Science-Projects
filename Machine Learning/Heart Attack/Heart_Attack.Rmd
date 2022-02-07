@@ -1,0 +1,368 @@
+---
+title: "Assessed Practicals 2"
+author: "Praveen Gopal Reddy"
+date: "21/07/2021"
+output:
+  word_document:
+    toc: yes
+  html_document:
+    toc: yes
+    theme: united
+---
+## Aim: 
+To Investigate the output variable called Hattack, and gives a 1/0 answer to the question ‘did the person had a heart attack?’
+
+```{r echo=FALSE}
+heart_attack = read.csv("C:/PRAVIN_VIJAYAN/leeds university/semester 2/SL/assignment 2/heart_attack.csv")
+```
+
+```{r}
+# After importing csv file of heart_attack.csv, the dataframe we are using is :
+summary(heart_attack)
+```
+
+# Tasks
+## 1.(a)
+Fit a logistic regression model for the outputs using all of the available inputs. Explain your model and report your results. Identify the direction and magnitude of each effect from the fitted coefficients. Comment on your findings.
+
+```{r}
+#Build logistic regression model on all data inputs
+model_all <- glm(Hattack ~ age+cp+trtbps+chol+thalachh+oldpeak, data = heart_attack,family=binomial(link = "logit"))
+summary(model_all)
+```
+
+* In above logistic model we have used binomial method because our dependent variable contains binary data i.e,0 or 1. Based on above summary we can see some coefficients are less significant and some are more significant. 
+
+* We see oldpeak and cp(chest pain) are highly significant with p-value closer to zero, next significant variable is thalachh(heart rate). The rest of inputs are not significant since p-value is greater than 0.05.
+
+* There are total 4 negative estimates and two positive estimates.
+The negative value of oldpeak tells us that all other variables being equal ,the probability of getting heart attack is less likely to happen. 
+
+
+* The positive value of significant variable cp tell us tha all other variables being equal ,the probability of getting heart attack has more likely to occur
+
+* The magnitude of  of cp is 45 times greater than thalachh because if we look at coefficients of thalachh is 0.02*45=0.9 which is approximately equal to the coefficients of cp .The magnitude of age and trtbps is almost same so they have 
+Strong association each other. 
+
+## 1.(b)
+Present the value of each coefficient estimate with a 95%
+confidence interval. Which inputs would you say have strong effects? Order the inputs in terms of decreasing effect. Comment on your findings and justify your reasoning.
+```{r}
+#Build confidence interval for coefficients estimates.
+#age 95% confidence interval
+t_critical=qnorm(0.975)
+coeff_estimates=summary(model_all)$coefficients
+estimate_age=coeff_estimates[2,1]
+sterr_age=coeff_estimates[2,2]
+interval_min_age=estimate_age-t_critical*sterr_age
+interval_max_age=estimate_age+t_critical*sterr_age
+print(paste(c("estimate_age:",estimate_age),collapse=""))
+print(paste(c("min_age:",interval_min_age),collapse=""))
+print(paste(c("max_age:",interval_max_age),collapse=""))
+
+#cp 95% confidence interval
+estimate_cp=coeff_estimates[3,1]
+sterr_cp=coeff_estimates[3,2]
+interval_min_cp=estimate_cp-t_critical*sterr_cp
+interval_max_cp=estimate_cp+t_critical*sterr_cp
+print(paste(c("estimate_cp:",estimate_cp),collapse=""))
+print(paste(c("min_cp:",interval_min_cp),collapse=""))
+print(paste(c("max_cp:",interval_max_cp),collapse=""))
+
+#trtbps(resting blood pressure) 95% confidence interval
+estimate_trtbps=coeff_estimates[4,1]
+sterr_trtbps=coeff_estimates[4,2]
+interval_min_trtbps=estimate_trtbps-t_critical*sterr_trtbps
+interval_max_trtbps=estimate_trtbps+t_critical*sterr_trtbps
+print(paste(c("estimate_trtbps:",estimate_trtbps),collapse=""))
+print(paste(c("min_trtbps:",interval_min_trtbps),collapse=""))
+print(paste(c("max_trtbps:",interval_max_trtbps),collapse=""))
+
+#chol(Cholestoral) 95% confidence interval thalachh
+estimate_chol=coeff_estimates[5,1]
+sterr_chol=coeff_estimates[5,2]
+interval_min_chol=estimate_chol-t_critical*sterr_chol
+interval_max_chol=estimate_chol+t_critical*sterr_chol
+print(paste(c("estimate_chol:",estimate_chol),collapse=""))
+print(paste(c("min_chol:",interval_min_chol),collapse=""))
+print(paste(c("max_chol:",interval_max_chol),collapse=""))
+
+#thalachh(maximum hear rate) 95% confidence interval 
+estimate_thalachh=coeff_estimates[6,1]
+sterr_thalachh=coeff_estimates[6,2]
+interval_min_thalachh=estimate_thalachh-t_critical*sterr_thalachh
+interval_max_thalachh=estimate_thalachh+t_critical*sterr_thalachh
+print(paste(c("estimate_thalachh:",estimate_thalachh),collapse=""))
+print(paste(c("min_thalachh:",interval_min_thalachh),collapse=""))
+print(paste(c("max_thalachh:",interval_max_thalachh),collapse=""))
+
+#oldpeak(previois peak) 95% confidence interval 
+estimate_oldpeak=coeff_estimates[7,1]
+sterr_oldpeak=coeff_estimates[7,2]
+interval_min_oldpeak=estimate_oldpeak-t_critical*sterr_oldpeak
+interval_max_oldpeak=estimate_oldpeak+t_critical*sterr_oldpeak
+print(paste(c("estimate_oldpeak:",estimate_oldpeak),collapse=""))
+print(paste(c("min_oldpeak:",interval_min_oldpeak),collapse=""))
+print(paste(c("max_oldpeak:",interval_max_oldpeak),collapse=""))
+```
+
+As you see all estimates are within the confidence interval.
+
+Lets find out strong inputs based on coefficients.
+```{r}
+#first find max value of each input variable from data set. 
+max_value=apply(heart_attack[2:7],2,max)
+
+#coefficients from  age to oldpeak
+coeff=model_all$coefficients[2:7]
+#mutliply max value with coeffiecients of estimates.
+extreme_effects=sort(coeff*max_value,decreasing = TRUE)
+extreme_effects
+```
+
+* The maximum value of oldpeak input is 6.2 from the data set.so the maximum possible effect for oldpeak is  6.2*(-0.82356)=-5.1060804, and thus the most extreme possible effect for oldpeak is greater than the effect for 
+any of the other variables in terms of highest negative impact.
+
+* Similarly thalachh has strong effect on dependent variable , if we do same calculation like above we get 202* 0.025266=5.103732. so thalachh has strong positive impact but since this variable is less significant than CP. CP will have higher effect than thalachh. 
+
+* So our final inputs in terms of decreasing effect based on its extreme possible effect and p-value (significant level) is:
+  * oldpeak
+  * cp
+  * thalachh
+  * trtbps
+  * age
+  * chol
+
+However we need to check how these factors importance change based on AIC in next question.
+
+
+## 1.(c)
+Using aic, perform model selection to determine which factors are useful to predict the result of the heart attack. Use a ‘greedy’ input selection procedure, as follows: At each stage evaluate the quality of fit using aic and stop if this gets worse. Report your results and comment on your findings. Are your findings consistent with the Task 1.(b)?
+
+### (i)
+select the best model with 1 input;
+```{r}
+#lets build models for one input
+one_input_model1=model_all <- glm(formula=Hattack ~ age,family=binomial,data = heart_attack)
+one_input_model1$aic  #AIC is 405.86
+one_input_model2=one_input_model_all <- glm(formula=Hattack ~ cp,family=binomial,data = heart_attack)
+one_input_model2$aic  #AIC is 360.060
+one_input_model3=one_input_model_all <- glm(formula=Hattack ~ trtbps,family=binomial,data = heart_attack)
+one_input_model3$aic  #AIC is 415.2248
+one_input_model4=one_input_model_all <- glm(formula=Hattack ~ chol,family=binomial,data = heart_attack)
+one_input_model4$aic  #AIC is 419.4295
+one_input_model5=one_input_model_all <- glm(formula=Hattack ~ thalachh,family=binomial,data = heart_attack)
+one_input_model5$aic  #AIC is 363.2569
+one_input_model6=one_input_model_all <- glm(formula=Hattack ~ oldpeak,family=binomial,data = heart_attack)
+one_input_model6$aic  #AIC is 358.9977
+```
+
+* so our best model for one input is one_input_model6 i.e, oldpeak with AIC=358.99
+
+### (ii)
+fixing that input, select the best two-input model (i.e. try all the other 5 inputs with the one you selected first).
+```{r}
+#models for two input
+two_input_model1=model_all <- glm(formula=Hattack ~ oldpeak+age,family=binomial,data = heart_attack)
+two_input_model1$aic  
+two_input_model2=model_all <- glm(formula=Hattack ~ oldpeak+cp,family=binomial,data = heart_attack)
+two_input_model2$aic
+two_input_model3=model_all <- glm(formula=Hattack ~ oldpeak+chol,family=binomial,data = heart_attack)
+two_input_model3$aic
+two_input_model4=model_all <- glm(formula=Hattack ~ oldpeak+trtbps,family=binomial,data = heart_attack)
+two_input_model4$aic
+two_input_model5=model_all <- glm(formula=Hattack ~ oldpeak+thalachh,family=binomial,data = heart_attack)
+two_input_model5$aic
+```
+
+* Our best model is two_input_model2 with oldpeak+cp where AIC is smaller than others AIC=306.529
+
+### (iii)
+select the best three-input model containing the first two inputs you chose, etc.
+
+```{r}
+#models for three input
+three_input_model1=model_all <- glm(formula=Hattack ~ oldpeak+cp+age,family=binomial,data = heart_attack)
+three_input_model1$aic  
+three_input_model2=model_all <- glm(formula=Hattack ~ oldpeak+cp+chol,family=binomial,data = heart_attack)
+three_input_model2$aic
+three_input_model3=model_all <- glm(formula=Hattack ~ oldpeak+cp+trtbps,family=binomial,data = heart_attack)
+three_input_model3$aic
+three_input_model4=model_all <- glm(formula=Hattack ~ oldpeak+cp+thalachh,family=binomial,data = heart_attack)
+three_input_model4$aic
+```
+
+* Our best model for three input is three_input_model4 with oldpeak+cp+thalachh where AIC is smaller than others which is AIC=294.3654
+
+```{r}
+#four input model
+four_input_model1=model_all <- glm(formula=Hattack ~ oldpeak+cp+thalachh+age,family=binomial,data = heart_attack)
+four_input_model1$aic  
+four_input_model2=model_all <- glm(formula=Hattack ~ oldpeak+cp+thalachh+chol,family=binomial,data = heart_attack)
+four_input_model2$aic
+four_input_model3=model_all <- glm(formula=Hattack ~ oldpeak+cp+thalachh+trtbps,family=binomial,data = heart_attack)
+four_input_model3$aic
+```
+
+* Our best model for four input is four_input_model3 with oldpeak+cp+thalachh+trtbps where AIC is smaller than others which is AIC=291.9414 
+
+```{r}
+#five input model 
+five_input_model1=model_all <- glm(formula=Hattack ~ oldpeak+cp+thalachh+trtbps+age,family=binomial,data = heart_attack)
+five_input_model1$aic  
+five_input_model2=model_all <- glm(formula=Hattack ~ oldpeak+cp+thalachh+trtbps+chol,family=binomial,data = heart_attack)
+five_input_model2$aic
+```
+
+* Our best model for five input is five_input_model2 with oldpeak+cp+thalachh+trtbps+chol where AIC is smaller than others which is AIC=293.4702
+
+As input variables are increased AIC is getting smaller.
+From results of above models we can say that it is consistent with 1(b) results with little variation in order of importance for factors like cp and thalachh.
+
+## 2
+Use the rpart package to create a decision tree classification model. Explain and visualise your model
+and interpret the fitted model.
+
+```{r}
+#install.packages('rpart')
+library(rpart)
+#install.packages("rpart.plot")
+library(rpart.plot)
+
+#Building Decision tree model
+dectree <- rpart(Hattack~., data = heart_attack, method = 'class', control=rpart.control(cp = 0.01),parms = list(split = "gini"))
+
+#summary of decision tree
+summary(dectree)
+
+#visualization of decision tree
+prp(dectree, extra=6, xpd=TRUE, cex=0.8)
+```
+
+* There are total 12 terminal nodes and 93 internal nodes in dectree model
+
+* The decision tree started from most important variable cp with conidtion(less than 1).
+
+* If cp is less than 1 then we check oldpeak>=0.7. If it is true then it classifies into X0(means person has heart attack) and the probability of this class is 0.12.
+
+* If it is less than 0.7 then we check second condition if oldpeak is less than 0.25. if this condition is false then it classifies into X1(means person had heart attack). the
+probability of this class is 0.75
+
+* similarly when CP >1, we check age>=57, if this condition false then it classifies into X1 with probability of 0.90
+
+
+## 3
+Compare your decision tree model and your logistic regression model. Do they attribute high importance to the same factors? Interpret each model to explain the heart attack occurrence.
+
+```{r}
+#Variable importance from decision tree model
+imp_var <- as.data.frame(dectree$variable.importance)
+imp_var
+```
+
+* The dataframe "imp_var" contains most significant features, the importance of variables in decreasing order are : cp,oldpeak,thalachh,age,chol and trtbps.
+
+* lets now check with variable importance of logistic regression based on AIC that we have done in 1.c The best variable importance in decreasing order in one input model are:
+oldpeak,cp,thalachh,age,trtbps and chol
+
+* As you see in decision tree, CP is valued has highest importance and strong effect on dependent variable where as in logistic regression CP is second importance and first is oldpeak. But if we compare combination of best two and three input i.e,
+cp+oldpeak or cp+oldpeak+thalachh both models agree on this.
+
+* From logistic regression model, the age+chol+trtbps has least importance on heart attach target variable as compared to combination of cp+oldpeak+thalachh.This combination of importance also agrees with decision tree variable importance as you can see in last three rows in "imp_var" data frame
+
+* The lowest important factor in regression model is chol(in terms of AIC) and in decision tree least important  factor is trtbps which contradicts each other on level of importance order.
+
+
+## 4
+Which model would you use if you were explaining the heart attack data to an audience, and why?
+
+```{r}
+#lets build training and test set for logistic regression and find out accuracy of test test.
+library(caret)
+#install.packages('e1071', dependencies=TRUE)
+data<-heart_attack
+set.seed(1237)
+train <- sample(nrow(data), .8*nrow(data), replace = FALSE)
+TrainSet <- data[train,]
+ValidSet <- data[-train,]
+dim(TrainSet)
+dim(ValidSet)
+#Tuning parameters
+fitControl <- trainControl(method = "repeatedcv",
+                           number = 10,
+                           repeats = 10,
+                           classProbs = TRUE,
+                           summaryFunction = twoClassSummary)
+
+TrainSet$Hattack<-make.names(TrainSet$Hattack)
+set.seed(6000)
+# Logistic Regression with the train function in caret package
+gbm<- caret::train(Hattack ~ ., 
+                   data = TrainSet ,
+                   method = "glm", 
+                   trControl = fitControl,
+                   metric="ROC")
+
+gbm
+#  we predict on the Test Set.
+pred <- predict(gbm,ValidSet)
+t<-table(pred, ValidSet$Hattack)
+t.df<-as.data.frame(t)
+#Plotting the Confusion Matrix for Logistic Regression
+#install.packages("ggthemes")
+library(ggthemes)
+logisticplot =ggplot(data = t.df, aes(x = Var2, y = pred, label=Freq)) +
+  geom_tile(aes(fill = Freq)) +
+  scale_fill_gradient(low="green", high="blue") +
+  theme_economist()+
+  xlab("Actual Hattack") +
+  ylab("Predicted Hattack") +
+  geom_text(size=8) +
+  ggtitle("Logistic Regression confusion matrix")
+logisticplot + theme_bw()
+```
+
+
+From confusion matrix the accuracy is: 
+accuracy = TP+TN/TP+TN+FP+FN = 20+21/61=0.67
+
+
+
+```{r}
+# Decision tree train set
+gbmGrid <-  expand.grid(cp=c(0.01))
+TrainSet$Hattack<-make.names(TrainSet$Hattack)
+system.time(decstree <- caret::train(Hattack ~ ., 
+                                     data = TrainSet,
+                                     method = "rpart", 
+                                     trControl = fitControl,
+                                     metric="ROC",
+                                     tuneGrid=gbmGrid))
+decstree
+#  we predict on the Test Set.
+pred <- predict(decstree,ValidSet)
+t<-table(pred, ValidSet$Hattack)
+t.df<-as.data.frame(t)
+#plotting confusion matrix for decision tree
+regressionplot =ggplot(data = t.df, aes(x = Var2, y = pred, label=Freq)) +
+  geom_tile(aes(fill = Freq)) +
+  scale_fill_gradient(low="green", high="blue") +
+  theme_economist()+
+  xlab("Actual Hattack") +
+  ylab("Predicted Hattack") +
+  geom_text(size=8) +
+  ggtitle("Decision Tree confusion matrix")
+regressionplot + theme_bw()
+```
+
+From confusion matrix the accuracy is:
+accuracy = TP+TN/TP+TN+FP+FN = 16+24/61=0.65
+
+Based on accuracy results, the logistic regression has little upper hand than decision tree test results.
+
+we can also observe that the ROC(receiver operating characteristic curve) for regression model is more than decision tree model
+
+* ROC for logistic regression = 0.8513252
+* ROC for decision tree = 0.8060832
+
+ROC is a probability curve which is capable of distinguishing between classes. so higher the ROC better the model. Based on above results and interpretation we must choose logistic regression model over decision tree.

@@ -1,0 +1,294 @@
+---
+title: "Assessed Practical 1"
+author: "Praveen Gopal Reddy"
+date: "08/07/2021"
+output:
+  word_document:
+    toc: yes
+  html_document:
+    toc: yes
+    theme: united
+---
+
+
+## Aim: 
+To investigate how the number of medals a country wins can be predicted from national population and GDP, and how consistent these relationships are
+
+```{r echo=FALSE}
+medal_pop_gdp_stlearn  = read.csv("C:/PRAVIN_VIJAYAN/leeds university/semester 2/SL/assignment 1/medal_pop_gdp_data_statlearn.csv")
+pop_gdp_stlearn_2021  = read.csv("C:/PRAVIN_VIJAYAN/leeds university/semester 2/SL/assignment 1/2021_pop_gdp_staltearn.csv")
+```{r}
+# After importing csv file of medal_pop_gdp_data_statlearn.csv and 2021_pop_gdp_staltearn.csv, the dataframes that we use are: medal_pop_gdp_stlearn and pop_gdp_stlearn_2021
+summary(medal_pop_gdp_stlearn)
+summary(pop_gdp_stlearn_2021)
+```
+
+
+# Regression Tasks: 
+## Task 1
+Perform a linear regression to predict the medal count in 2008 and 2016 (separately, in two regressions) from Population and GDP. Explain your model and approach to learn the model parameters. Report your results and comment on your findings.
+
+```{r}
+#Building linear regression model for 2008 and 2016
+model2008 <- glm(Medal2008 ~ GDP+Population, data = medal_pop_gdp_stlearn)
+summary(model2008)
+
+model2016 <- glm(Medal2016 ~ GDP+Population, data = medal_pop_gdp_stlearn)
+summary(model2016)
+
+#New dataframe to put predictions of 2008 and 2016: 
+predict2008_and_2016<- data.frame(Country = medal_pop_gdp_stlearn$Country, Population = medal_pop_gdp_stlearn$Population, GDP = medal_pop_gdp_stlearn$GDP) 
+
+#Add 2008 actual and predicted new columns to the dataframe
+predict2008_and_2016['Actual_2008'] <- medal_pop_gdp_stlearn$Medal2008 
+predict2008_and_2016['Predicted_2008'] <- predict(model2008)
+
+#Add 2016 actual and predicted new columns to the dataframe
+predict2008_and_2016['Actual_2016'] <- medal_pop_gdp_stlearn$Medal2016
+predict2008_and_2016['Predicted_2016'] <- predict(model2016)
+
+#display results
+summary(predict2008_and_2016)
+
+#plot the relation between actual and predicted values.
+library(ggplot2)
+plot_2008 <- ggplot(predict2008_and_2016, aes(x=log(Predicted_2008), y=log(Actual_2008))) + 
+  geom_point(size=2, shape=16) + xlab("Log2(Predicted medals in 2008)") +
+  ylab("Log2(Actual Medals in 2008)") + geom_smooth(method = lm,se=FALSE)
+
+print(plot_2008)
+
+plot_2016<- ggplot(predict2008_and_2016, aes(x=log(Predicted_2016), y=log(Actual_2016))) +  
+  geom_point(size=2, shape=16) + xlab("Log2(predicted medals in 2016)") +
+  ylab("Log2(Actual medals in 2016)") + geom_smooth(method = lm,se=FALSE)
+
+print(plot_2016) 
+```
+
+By looking at summary of model2008 and model2016, the estimates of Coefficients of GDP in both models is very significant. Because the P-value is closer to zero
+at 95% confidence interval. So GDP variable has strong relation on output variable.
+
+On other hand, the coefficient of population variable in both models is not significant since P-value(0.2) is greater than 0.05 at 95% confidence interval.
+
+From plot diagrams we can see that most of the data points are above and below the regression line. which means residual are positive and negative. when residual is positive, the line underestimates the actual data value of y. when residual is negative, the line overestimates the actual data value of y.
+
+## Task 2
+How consistent are the effects of Population and GDP over time?
+
+```{r}
+#coefficients of 2008 model
+summary_2008_coeff=summary(model2008)$coefficients
+#coefficients of 2016 model
+summary_2016_coeff=summary(model2016)$coefficients
+
+#lets construct confidence interval for coefficients of estimates of GDP and Population
+t_critical=qt(0.975,68)
+#2008 GDP
+estimate_gdp_2008=summary_2008_coeff[2,1]
+sterr_gdp_2008=summary_2008_coeff[2,2]
+interval_min_gdp_2008=estimate_gdp_2008-t_critical*sterr_gdp_2008
+interval_max_gdp_2008=estimate_gdp_2008+t_critical*sterr_gdp_2008
+print(paste(c("estimate_gdp_2008:",estimate_gdp_2008),collapse=""))
+print(paste(c("min_gdp_2008:",interval_min_gdp_2008),collapse=""))
+print(paste(c("max_gdp_2008:",interval_max_gdp_2008),collapse=""))
+
+#2016 GDP
+estimate_gdp_2016=summary_2016_coeff[2,1]
+sterr_gdp_2016=summary_2016_coeff[2,2]
+interval_min_gdp_2016=estimate_gdp_2016-t_critical*sterr_gdp_2016
+interval_max_gdp_2016=estimate_gdp_2016+t_critical*sterr_gdp_2016
+print(paste(c("estimate_gdp_2016:",estimate_gdp_2016),collapse=""))
+print(paste(c("min_gdp_2016:",interval_min_gdp_2016),collapse=""))
+print(paste(c("max_gdp_2016:",interval_max_gdp_2016),collapse=""))
+
+#2008 population
+estimate_pop_2008=summary_2008_coeff[3,1]
+sterr_pop_2008=summary_2008_coeff[3,2]
+interval_min_pop_2008=estimate_pop_2008-t_critical*sterr_pop_2008
+interval_max_pop_2008=estimate_pop_2008+t_critical*sterr_pop_2008
+print(paste(c("estimate_pop_2008:",estimate_pop_2008),collapse=""))
+print(paste(c("min_pop_2008:",interval_min_pop_2008),collapse=""))
+print(paste(c("max_pop_2008:",interval_max_pop_2008),collapse=""))
+
+#2016 population
+estimate_pop_2016=summary_2016_coeff[3,1]
+sterr_pop_2016=summary_2016_coeff[3,2]
+interval_min_pop_2016=estimate_pop_2016-t_critical*sterr_pop_2016
+interval_max_pop_2016=estimate_pop_2016+t_critical*sterr_pop_2016
+print(paste(c("estimate_pop_2016:",estimate_pop_2016),collapse=""))
+print(paste(c("min_pop_2016:",interval_min_pop_2016),collapse=""))
+print(paste(c("max_pop_2016:",interval_max_pop_2016),collapse=""))
+```
+
+From above results,it is obvious that estimate of GDP is consistent in 2008 and 2016 because the estimate value is within the confidence interval. It is also closer to zero indicating significance level in both years.For the estimate of population in 2008 and 2016 it is different but insignificant in terms of p-value in both years.
+
+## Task 3
+Using the regression for the 2008 medal count make a prediction for the results of 2012.
+```{r}
+library(dplyr)
+newdata = data.frame(Country = medal_pop_gdp_stlearn$Country, Population = medal_pop_gdp_stlearn$Population, GDP = medal_pop_gdp_stlearn$GDP)
+
+predictions_2012 = predict(model2008, newdata)
+
+#Added predictions and actual to dataframe
+newdata['Predicted_2012'] <- predictions_2012 
+newdata ['Actual_2012' ]<- medal_pop_gdp_stlearn$Medal2012
+#Round to whole numbers
+newdata <- newdata %>% mutate(across(starts_with("Predicted_2012"), round, 0))
+#print predicted and actual summary
+summary(newdata[4:5])
+```
+From summary data mean and median for predicted and actual is almost same.
+
+## Task 4
+Plot your predictions against the actual results of 2012. If the results are hard to see, use a transformation of the axes to improve clarity. Comment on your findings. How good are the predictions? Which countries are outliers from the trend?
+
+```{r}
+library(ggplot2)
+plot_task4 <- ggplot(newdata, aes(x=log(Predicted_2012), y=log(Actual_2012))) +
+  geom_point(size=2, shape=16) + xlab("Log(Predicted medals won in 2012)") +
+  ylab("Log(Actual medals in 2012)") + geom_smooth(method = lm)
+
+plot_task4
+# Get fit, and make a variable with labels for points outside CIs
+fit <- lm(newdata$Actual_2012~newdata$Predicted_2012)
+
+#creates a dataframe with the fit, lower and upper CI's
+dat_upr_lwr <- predict.lm(fit, interval="confidence") 
+#The below condition creates new column "outside" with a country name if it is outside the CI's
+newdata$outside <- ifelse(newdata$Actual_2012 < dat_upr_lwr[,"upr"] & newdata$Actual_2012 > dat_upr_lwr[,"lwr"], "", as.character(newdata$Country))
+#display countries which are outliers
+newdata$outside
+```
+The predicted and actual medal counts were transformed to log2(medal count) to improve the clarity. In the graph above, we can see that there are a significant number of outliers. we have also used the geom_smooth() method which gives a regression line and 95% confidence interval.Clearly we can see there are number of data points outside, providing poor prediction results.
+
+The dataframe "newdata" with column name outside gives us countries which are potentially outliers from the above graph. there are total 37 countries which are above or below the Confidence interval and 34 countries within the band.
+
+## Task 5
+Using the regression for the 2016 medal count, make prediction for the unknown results of the upcoming 2021 Olympic games.
+
+```{r}
+library(dplyr)
+predictions_2021 = predict(model2016, pop_gdp_stlearn_2021)
+
+#added predictions to existing dataframe
+pop_gdp_stlearn_2021['Predicted_2021'] <- predictions_2021 
+#Round to whole numbers
+pop_gdp_stlearn_2021 <- pop_gdp_stlearn_2021 %>% mutate(across(starts_with("Predicted_2021"), round, 0))
+#display predicted summary
+summary(pop_gdp_stlearn_2021[4])
+```
+
+# Model Selection Tasks
+## Task 1
+Fit linear regressions models for the total medal count in 2008 using: (i) Population alone; (ii) GDP alone; (iii) Population and GDP. Perform model selection using the Akaike Information Criterion and report your results.
+
+```{r}
+#Build all three models
+model1 <- glm(Medal2008~GDP, data = medal_pop_gdp_stlearn)
+model2 <- glm(Medal2008~Population, data = medal_pop_gdp_stlearn)
+model3 <- glm(Medal2008~GDP+Population, data = medal_pop_gdp_stlearn)
+
+#summary of glm includes AIC
+summary(model1)
+summary(model2)
+summary(model3)
+```
+From summary of all three models. we have following AIC's values.
+model1 : 553.13
+model2 : 618.92
+model3 : 553.72
+
+Model 2 is larger than other two models.The AIC's of model1 and model3 are almost similar. Model1 has minimum AIC. lets compare model1 and model3. The relative likelihood of model 'i' is given by
+exp((AICmin − AICi)/2)
+so model3 exp(553.13-553.72/2)=0.744 times as probable as the first model to minimize the information loss.
+
+we have another valid point as per rule of thumb is that models within 1-2 of the minimum AIC have substantial support, hence model3 is acceptable.
+
+## Task 2
+Use cross-validation to perform a model selection between (i) Population alone; (ii) GDP alone; (iii) Population and GDP. Comment on and report your results. Do your results agree with the model selected by the AIC?
+
+```{r}
+
+z1 = medal_pop_gdp_stlearn$Medal2012
+z2 = medal_pop_gdp_stlearn$GDP
+z3 = medal_pop_gdp_stlearn$Population
+
+new_data_frame = data.frame(z3,z2,z1)
+#create for loop for cross validation of 1000 times
+
+medal_winner = rep(NA, 1000)
+for (iter in 1:1000){
+
+#create random 60% of the data
+random_pick<-runif(nrow(new_data_frame))>0.60 
+
+#assign 60% of the data to train set [ which is 42 rows]
+training<-new_data_frame[random_pick,]
+
+#assign remaining 40% of the data to test set [ which is 29 rows]
+testing <-new_data_frame[!random_pick,]# about 40% testing (29 rows testing)
+
+#list all model selection --gdp,population, gdp+population
+model_selection = c("z1~z2", "z1~z3","z1~z2+z3") 
+
+#Replicate elements of vectors and lists
+predictive_log_likelihood = rep(NA, length(model_selection))
+
+for (i in 1:length(model_selection)){
+#build model for training set
+current_model = glm(formula = model_selection[i], data = training)
+sigma = sqrt(summary(current_model)$dispersion)
+#predict the model from testing data
+predict_test = predict(current_model, testing) 
+
+#calculate the predictive log probability
+predictive_log_likelihood[i] = sum(dnorm(testing$z1, predict_test, sigma, log=TRUE))
+
+}
+medal_winner[iter] = which.max(predictive_log_likelihood)
+}
+
+#plot the histogram which shows how many times model won out of 1000 cross validation 
+hist(medal_winner, breaks = seq(0.5, 7.5, 1), xlab='Model', ylab='Frequency', main='')
+```
+
+As you see we have performed 1000 times cross validation with 60% training set and 40% test set. From histogram plot,the log probability of model 1 (model2008~GDP) was the highest. Model 1 has 700 out of 1000,which is 70% winning of the time.This results doesn't agree with AIC in task 1 where model 1 achieved lowest AIC 553.13
+
+similarly model3(model~gpd+population) has highest AIC in task 1 but after running 1000 cross validations , model 2(model2008~population) has 20%(200/1000) compared to 10% (100/1000) for model 3.
+
+## Task 3
+Using the three fitted models from Model Selection Task 1, predict the results of Rio 2012. Which model predicts best? Justify your reasoning. Compare this result with the earlier results on model performance
+
+```{r}
+library(dplyr)
+#install.packages("Metrics")
+library(Metrics)
+#create new dataframe from medal_pop_gdp_stlearn
+predict_data = data.frame(Country = medal_pop_gdp_stlearn$Country, Population = medal_pop_gdp_stlearn$Population, GDP = medal_pop_gdp_stlearn$GDP,Actual=medal_pop_gdp_stlearn$Medal2012)
+
+#prediction based on GDP
+model1_prediction = predict.glm(model1, predict_data) 
+#prediction based on population 
+model2_prediction = predict.glm(model2, predict_data)
+#prediction based on GDP and Population
+model3_prediction = predict.glm(model3, predict_data) 
+
+#Add 2012 medal predictions to the predict_data dataframe
+
+predict_data['Model 1 Predictions GDP'] <- model1_prediction
+predict_data['Model 2 Predictions Population'] <- model2_prediction
+predict_data['Model 3 Predictions GDP and Population'] <- model3_prediction
+
+predict_data <- predict_data %>% mutate(across(starts_with("Model"), round, 0))
+
+#display summary of predict_data dataframe
+summary(predict_data)
+
+#To compare models which one predicts best, I have used the Root mean squared error
+
+rmse(predict_data$Actual,predict_data$`Model 1 Predictions GDP`)
+rmse(predict_data$Actual,predict_data$`Model 2 Predictions Population`)
+rmse(predict_data$Actual,predict_data$`Model 3 Predictions GDP and Population`)
+```
+As we know a smaller RMSE indicates a better fit of the data.The model 3 has smaller RMSE hence model 3 is best model to predict the medals based on GDP and Population.
