@@ -56,6 +56,7 @@ R, dplyr, ggplot, linear Regression
 ## Exploratory Data Analysis(EDA)
 ### Climate Change
 - Exploratory Data analysis on global warming and impacts of livestock farming, deforestation and agriculture on climate change using Pandas, NumPy, Matplotlib and Seaborn.
+- Performed time series analysis on temperature anomaly of different continents, time series analysis on CO2 emissions by different sectors and type of gas.
 
 #### Skills and Tools
 Data Wrangling,Python, Pandas,Numpy,Matplotlib
