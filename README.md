@@ -72,7 +72,6 @@ Data Wrangling, Python,Pandas,Numpy,Matplotlib
 - Analyze River Wey floods in Guildford town, Surrey in 2013 and 2020 and River Severn floods at Bewdley town, Worcestershire in 2021.
 - Analyze time series data and build quadrant plots.
 - Analyze river flood data and find correlations between input variables.
-- Write equations and functions to calcuate amount of water flooded after threshold river level reached.
 - Visualize flooded water in terms of graphs and 2d boxes.
 
 #### Skills and Tools
@@ -87,3 +86,11 @@ Maths,Python, Pandas,Numpy,Datatime,Matplotlib,R
 
 #### Skills and Tools
 R,dplyr,ggplot,distributions, Inferential statistics.
+
+## Time Series
+### Temperature and Stocks
+- Time series analysis on global warming and prediction of temperature for US cities using ARIMA model.
+- Prediction of stock price using AUTO ARIMA model.
+
+#### Skills and Tools
+ARIMA, Pandas,Numpy, seaborn, matplotlib, ACF,PCF
